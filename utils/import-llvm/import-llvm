@@ -16,16 +16,19 @@ import sys
 # ADT types.
 ADT_imports = ['iterator', 'iterator_range', 'APFloat', 'APInt', 'APSInt',
                'AllocatorList', 'EpochTracker', 'Hashing', 'None', 'Optional',
-               'StringExtras', 'STLExtras']
+               'StringExtras', 'STLExtras', 'STLForwardCompat', 'ScopeExit',
+               'FunctionExtras', 'FloatingPointMode', 'bit']
 
 # ADT basic data structures.
 ADT_imports += ['ArrayRef', 'PointerIntPair', 'PointerUnion', 'StringRef',
                 'StringSwitch', 'Triple', 'Twine', 'IntrusiveRefCntPtr',
                 'ilist', 'ilist_base', 'ilist_node', 'ilist_node_base',
-                'ilist_node_options', 'simple_ilist', 'ilist_iterator']
+                'ilist_node_options', 'simple_ilist', 'ilist_iterator',
+                'BitVector', 'StringSet']
 
 # ADT Mapping structures.
-ADT_imports += ['DenseSet', 'DenseMap', 'DenseMapInfo', 'FoldingSet', 'StringMap']
+ADT_imports += ['DenseSet', 'DenseMap', 'DenseMapInfo', 'FoldingSet', 'StringMap',
+                'StringMapEntry']
 
 # ADT "Small" structures.
 ADT_imports += ['SmallPtrSet', 'SmallSet', 'SmallString', 'SmallVector',]
@@ -47,7 +50,8 @@ Support_imports = [ 'AlignOf', 'Allocator', 'Atomic', 'CBindingWrapping',
                     'SmallVectorMemoryBuffer', 'StringSaver', 'SwapByteOrder',
                     'TimeValue', 'Threading', 'Unicode', 'UniqueLock', 'Unix',
                     'WindowsError', 'WindowsSupport', 'Valgrind',
-                    'circular_raw_ostream', 'raw_ostream', 'type_traits']
+                    'circular_raw_ostream', 'raw_ostream', 'type_traits',
+                    'AllocatorBase', 'Alignment', 'ExitCodes']
 
 # Stuff we don't want, but have to pull in.
 Support_imports += [ 'APFloat', 'ARMTargetParser', 'ARMBuildAttributes',
@@ -58,7 +62,12 @@ Support_imports += [ 'APFloat', 'ARMTargetParser', 'ARMBuildAttributes',
                      'Locale', 'MemAlloc', 'NativeFormatting', 'Options',
                      'Path', 'Process', 'Program', 'SMLoc', 'SourceMgr',
                      'Signals', 'Support', 'TargetParser', 'Types', 'Unicode',
-                     'UnicodeCaseFold', 'UnicodeCharRanges', 'X86TargetParser']
+                     'UnicodeCaseFold', 'UnicodeCharRanges', 'X86TargetParser',
+                     'BCD', 'FileSystem/UniqueID', 'DebugOptions', 'MemoryBufferRef',
+                     'FormatAdapters', 'ELFAttributes', 'VirtualFileSystem',
+                     'RISCVTargetParser', 'VersionTuple', 'HashBuilder', 'thread',
+                     'WithColor', 'SaveAndRestore', 'CrashRecoveryContext',
+                     'AutoConvert', 'ThreadLocal']
 
 # Support data structures.
 Support_imports += ['YAMLParser']
@@ -143,6 +152,7 @@ def main():
         if name not in Support_source_excludes:
             import_source('Support', name+'.c')
             import_source('Support', name+'.cpp')
+            import_source('Support', name+'.h')
             import_source('Support', os.path.join('Unix', name+'.h'))
             import_source('Support', os.path.join('Unix', name+'.inc'))
             import_source('Support', os.path.join('Windows', name+'.h'))
@@ -150,11 +160,6 @@ def main():
     for name in Demangle_imports:
         import_header('Demangle', name+'.h')
         import_source('Demangle', name+'.cpp')
-
-    # Copy over all of demangle
-    demangle_src = os.path.join(llvm_srcroot, 'lib', 'Demangle')
-    demangle_dest = os.path.join(llbuild_srcroot, 'lib', 'llvm', 'Demangle')
-    shutil.copytree(demangle_src, demangle_dest)
 
     # Add in the CMakeLists
     llbuild_cmake_root = os.path.join(llbuild_srcroot, 'utils', 'import-llvm', 'cmake')

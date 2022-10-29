@@ -156,6 +156,13 @@
 /* #undef HAVE_MALLOC_MALLOC_H */
 #endif
 
+/* Define to 1 if you have the <sysexits.h> header file. */
+#if __has_include(<sysexits.h>)
+#define HAVE_SYSEXITS_H 1
+#else
+/* #undef HAVE_SYSEXITS_H */
+#endif
+
 /* Define to 1 if you have the `malloc_zone_statistics' function. */
 #define HAVE_MALLOC_ZONE_STATISTICS 1
 

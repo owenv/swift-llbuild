@@ -1,7 +1,7 @@
 # Disable implicit-fallthrough, if used.
 append_if(CXX_SUPPORTS_IMPLICIT_FALLTHROUGH_FLAG "-Wno-implicit-fallthrough" CMAKE_CXX_FLAGS)
 
-add_llbuild_library(llvmSupport STATIC
+add_llbuild_library(llvmSupport
 APFloat.cpp
 APInt.cpp
 APSInt.cpp
@@ -59,11 +59,3 @@ target_link_libraries(llvmSupport PRIVATE
   Threads::Threads
   ${CMAKE_DL_LIBS})
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-  target_link_libraries(llvmSupport PRIVATE
-    execinfo)
-endif()
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Android|Darwin|Linux")
-  target_link_libraries(llvmSupport PRIVATE curses)
-endif()
